@@ -1,0 +1,49 @@
+{#include layout/base.html}
+{#title}{district.year} {district.abbreviation} Awards{/title}
+
+{#breadcrumb}
+<ol class="breadcrumb" style="display: flex; list-style: none; padding: 0; gap: 0.5rem;">
+	<li><a href="/districts/{district.year}">{district.year} Districts</a></li>
+	<li>&rsaquo;</li>
+	<li>{district.displayName}</li>
+</ol>
+{/breadcrumb}
+
+{#nav}
+<nav style="margin-top: 0.5rem; margin-bottom: 1rem;">
+	<ul style="display: flex; list-style: none; padding: 0; gap: 1rem;">
+		<li><a href="/districts/{district.key}/events">Events</a></li>
+		<li><a href="/districts/{district.key}/teams">Teams</a></li>
+		<li><a href="/districts/{district.key}/rankings">Rankings</a></li>
+		<li><a href="/districts/{district.key}/awards">Awards</a></li>
+	</ul>
+</nav>
+{/nav}
+
+{#content}
+<div class="row">
+	<div class="twelve columns">
+
+		{#for award in awardsMap.entrySet()}
+		<table class="u-full-width">
+			<h2>{award.getKey()}</h2>
+			<thead>
+				<tr>
+					<th>Team #</th>
+					<th>Awardee</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#for recipient in award.getValue()}
+				<tr>
+					<td>{recipient.getTeamKey().replace("frc", "")}</td>
+					<td>{recipient.awardee}</td>
+				</tr>
+				{/for}
+			</tbody>
+		</table>
+		{/for}
+	</div>
+</div>
+{/content}
+{/include}

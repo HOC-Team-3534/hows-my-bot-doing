@@ -144,7 +144,7 @@ openApiGenerate {
 // Include the generated sources in your main source set
 sourceSets.main.java {
     srcDirs += "$buildDir/generated/src/gen/java"
-    //exclude "**/invoker/**"
+    exclude "**/invoker/**"
 }
 
 

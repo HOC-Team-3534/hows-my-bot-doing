@@ -2,10 +2,12 @@ package org.team3534.resources;
 
 import com.tba.api.DistrictApi;
 import com.tba.api.DistrictsApi;
+import com.tba.model.Award;
+import com.tba.model.AwardRecipient;
 import com.tba.model.DistrictList;
+import com.tba.model.DistrictRanking;
 import com.tba.model.EventSimple;
 import com.tba.model.TeamSimple;
-
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
@@ -14,6 +16,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +32,10 @@ public class DistrictResource {
         static native TemplateInstance events(DistrictList district, List<EventSimple> events);
 
         static native TemplateInstance teams(DistrictList district, List<TeamSimple> teams);
+
+        static native TemplateInstance rankings(DistrictList district, List<DistrictRanking> rankings);
+
+        static native TemplateInstance awards(DistrictList district, Map<String, List<AwardRecipient>> awardsMap);
     }
 
     @Inject
@@ -59,6 +66,36 @@ public class DistrictResource {
         var teams = districtApi.getDistrictTeamsSimple(key, "");
         var district = getDistrict(key);
         return Templates.teams(district, teams);
+    }
+
+    @GET
+    @Path("/{key}/rankings")
+    public TemplateInstance rankings(String key) {
+        var rankings = districtApi.getDistrictRankings(key, "");
+        var district = getDistrict(key);
+        return Templates.rankings(district, rankings);
+    }
+
+    @GET
+    @Path("/{key}/awards")
+    public TemplateInstance awards(String key) {
+        var awards = districtApi.getDistrictAwards(key, "");
+        var district = getDistrict(key);
+
+        var awardsMap = new HashMap<String, List<AwardRecipient>>();
+
+        for (var award : awards) {
+            var m = awardsMap.get(award.getName());
+
+            if (m == null) {
+                m = new ArrayList<AwardRecipient>();
+                awardsMap.put(award.getName(), m);
+            }
+
+            m.addAll(award.getRecipientList());
+        }
+
+        return Templates.awards(district, awardsMap);
     }
 
     Map<String, DistrictList> districtMap = new HashMap<>();
