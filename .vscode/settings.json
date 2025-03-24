@@ -1,0 +1,19 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "files.exclude": {
+        "build": false,
+        "gradle": false,
+        "java-microprofile": false,
+        ".gitattributes": false,
+        ".gitignore": false,
+        "gradlew": false,
+        "gradlew.bat": false,
+        "settings.gradle": false,
+        "gradle.properties": false,
+        ".gradle": false,
+        ".vscode": false,
+        "app\\build": false,
+        "app\\bin": false,
+        "app\\src\\test": false
+    }
+}

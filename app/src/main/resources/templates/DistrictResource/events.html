@@ -1,0 +1,56 @@
+{#include layout/base.html}
+
+{#title}Events - {district.getAbbreviation().toUpperCase()}{/title}
+
+{#breadcrumb}
+<ol class="breadcrumb" style="display: flex; list-style: none; padding: 0; gap: 0.5rem;">
+    <li><a href="/districts/{district.year}">{district.year} Districts</a></li>
+    <li>&rsaquo;</li>
+    <li>{district.displayName}</li>
+</ol>
+{/breadcrumb}
+
+
+{#nav}
+<nav style="margin-top: 0.5rem; margin-bottom: 1rem;">
+    <ul style="display: flex; list-style: none; padding: 0; gap: 1rem;">
+        <li><a href="/districts/{district.key}/events">Events</a></li>
+        <li><a href="/districts/{district.key}/teams">Teams</a></li>
+        <li><a href="/districts/{district.key}/rankings">Rankings</a></li>
+        <li><a href="/districts/{district.key}/awards">Awards</a></li>
+    </ul>
+</nav>
+{/nav}
+
+{#content}
+<div class="row">
+    <div class="twelve columns">
+        <ul class="u-full-width">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>City</th>
+                        <th>Start</th>
+                        <th>End</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each events}
+                    <tr>
+                        <td>{it.name}</td>
+                        <td>{it.city}</td>
+                        <td>{it.startDate}</td>
+                        <td>{it.endDate}</td>
+                    </tr>
+                    {/each}
+                </tbody>
+            </table>
+        </ul>
+    </div>
+</div>
+</div>
+</div>
+{/content}
+
+{/include}

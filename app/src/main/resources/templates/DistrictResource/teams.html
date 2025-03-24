@@ -1,0 +1,47 @@
+{#include layout/base.html}
+{#title}{district.year} {district.abbreviation} Teams{/title}
+
+{#breadcrumb}
+<ol class="breadcrumb" style="display: flex; list-style: none; padding: 0; gap: 0.5rem;">
+	<li><a href="/districts/{district.year}">{district.year} Districts</a></li>
+	<li>&rsaquo;</li>
+	<li>{district.displayName}</li>
+</ol>
+{/breadcrumb}
+
+{#nav}
+<nav style="margin-top: 0.5rem; margin-bottom: 1rem;">
+	<ul style="display: flex; list-style: none; padding: 0; gap: 1rem;">
+		<li><a href="/districts/{district.key}/events">Events</a></li>
+		<li><a href="/districts/{district.key}/teams">Teams</a></li>
+		<li><a href="/districts/{district.key}/rankings">Rankings</a></li>
+		<li><a href="/districts/{district.key}/awards">Awards</a></li>
+	</ul>
+</nav>
+{/nav}
+
+{#content}
+<div class="row">
+	<div class="twelve columns">
+		<table class="u-full-width">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Name</th>
+					<th>City</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each teams}
+				<tr>
+					<td>{it.teamNumber}</td>
+					<td>{it.nickname}</td>
+					<td>{it.city}</td>
+				</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+</div>
+{/content}
+{/include}

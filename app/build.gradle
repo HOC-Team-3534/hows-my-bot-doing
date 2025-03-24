@@ -1,0 +1,159 @@
+plugins {
+    id 'io.quarkus'
+    // Spotless Formats the code
+    id 'com.diffplug.spotless' version '7.0.2'
+
+    id 'org.openapi.generator' version '7.12.0'
+}
+
+repositories {
+    // Use Maven Central for resolving dependencies.
+    mavenCentral()
+    mavenLocal()
+    maven { url = "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+dependencies {
+    // Use JUnit Jupiter for testing.
+    //testImplementation libs.junit.jupiter
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Use Lombok as compileOnly and for annotation processing.
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+    // For tests, if needed:
+    testCompileOnly 'org.projectlombok:lombok:1.18.36'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-rest'
+    //implementation 'io.quarkus:quarkus-rest-jsonb'
+    //implementation 'io.quarkus:quarkus-rest-jackson'
+    implementation 'io.quarkus:quarkus-rest-client'
+    implementation 'io.quarkus:quarkus-rest-client-jackson'
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-smallrye-metrics'
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+    implementation 'io.quarkiverse.qute.web:quarkus-qute-web'
+
+    implementation 'io.quarkus:quarkus-hibernate-validator'
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+}
+
+group 'org.team3534'
+version '1.0.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+//Configure Spotless to use google aosp standards
+//Style Guide: https://source.android.com/docs/setup/contribute/code-style#java-style-rules
+//Configure Spotless to apply on every build
+compileJava.dependsOn spotlessApply
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        toggleOffOn()
+        googleJavaFormat("1.25.2").aosp()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    groovyGradle {
+        target fileTree('.') {
+            include '**/*.gradle'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        greclipse()
+        leadingTabsToSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format 'xml', {
+        target fileTree('.') {
+            include '**/*.xml'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        eclipseWtp('xml')
+        trimTrailingWhitespace()
+        leadingTabsToSpaces(2)
+        endWithNewline()
+    }
+    format 'misc', {
+        target fileTree('.') {
+            include '**/*.md', '**/.gitignore'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        trimTrailingWhitespace()
+        leadingTabsToSpaces(2)
+        endWithNewline()
+    }
+}
+
+compileJava.dependsOn tasks.openApiGenerate
+openApiGenerate {
+    // Use a JAX-RS spec generator that works with Quarkus
+    generatorName = "jaxrs-spec"
+    // Point directly to the Blue Alliance Swagger API JSON URL
+    inputSpec = "$rootDir/app/src/main/resources/api_v3.json"
+    // Specify where to output the generated code
+    outputDir = "$buildDir/generated"
+    // Package names for the generated code
+    apiPackage = "com.tba.api"
+    modelPackage = "com.tba.model"
+    invokerPackage = "com.tba.invoker"
+    // Additional properties merged into the generation process:
+    additionalProperties = [
+        interfaceOnly         : "true",
+        returnResponse        : "false", // this tells the generator to return actual types
+        useSwaggerAnnotations : "false",
+        dateLibrary           : "java8",
+        useJakartaEe          : "true",
+        useMutiny             : "true"
+        //serverBasePath        : "/api/v3"  // <--- This adds /api/v3 to every @Path
+    ]
+    configOptions = [
+        library: "quarkus" // use Quarkus-friendly templates
+    ]
+}
+
+// Include the generated sources in your main source set
+sourceSets.main.java {
+    srcDirs += "$buildDir/generated/src/gen/java"
+    //exclude "**/invoker/**"
+}
+
+
+
+test {
+    systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}

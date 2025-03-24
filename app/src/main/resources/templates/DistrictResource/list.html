@@ -1,0 +1,27 @@
+{#include layout/base.html}
+
+{#title}{year} Districts{/title}
+
+{#breadcrumb}
+<div class="row">
+  <div class="twelve columns">
+    <h1>{year} Districts</h1>
+  </div>
+</div>
+{/breadcrumb}
+
+{#content}
+<div class="row">
+  <div class="twelve columns">
+    <ul class="u-full-width">
+      {#each districts}
+      <a href="/districts/{it.key}/events">
+        <li>{it.displayName}</li>
+      </a>
+      {/each}
+    </ul>
+  </div>
+</div>
+{/content}
+
+{/include}
