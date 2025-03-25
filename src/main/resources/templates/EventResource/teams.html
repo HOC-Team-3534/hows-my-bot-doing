@@ -1,20 +1,20 @@
 {#include layout/base}
-{#title}{event.shortName} Teams {/title}
+{#title}{event.getShortName()} Teams {/title}
 
 {#breadcrumb}
 <ol class="breadcrumb" style="display: flex; list-style: none; padding: 0; gap: 0.5rem;">
 	<li><a href="/events/{event.year}">{event.year} Events</a></li>
 	<li>&rsaquo;</li>
 	{#if event.getDistrict() != null}
-	<li><a href="/districts/{event.getDistrict().key}/events">{event.getDistrict().getAbbreviation().toUpperCase()}
+	<li><a href="/districts/{event.getDistrict().key}/events">{event.getDistrict().getAbbr().toUpperCase()}
 			{event.year}</a></li>
 	<li>&rsaquo;</li>
 	{/if}
 	{#if parentEvent != null}
-	<li><a href="/events/{parentEvent.key}">{parentEvent.getShortName()}</a></li>
+	<li><a href="/events/{parentEvent.key}">{parentEvent.getName()}</a></li>
 	<li>&rsaquo;</li>
 	{/if}
-	<li>{event.shortName}</li>
+	<li>{event.getShortName()}</li>
 </ol>
 {/breadcrumb}
 

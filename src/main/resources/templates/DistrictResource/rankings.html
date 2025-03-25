@@ -1,11 +1,11 @@
 {#include layout/base}
-{#title}{district.year} {district.abbreviation} Rankings{/title}
+{#title}{district.year} {district.getAbbr().toUpperCase()} Rankings{/title}
 
 {#breadcrumb}
 <ol class="breadcrumb" style="display: flex; list-style: none; padding: 0; gap: 0.5rem;">
 	<li><a href="/districts/{district.year}">{district.year} Districts</a></li>
 	<li>&rsaquo;</li>
-	<li>{district.displayName}</li>
+	<li>{district.name}</li>
 </ol>
 {/breadcrumb}
 

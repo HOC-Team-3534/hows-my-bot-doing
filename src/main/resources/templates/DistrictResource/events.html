@@ -1,12 +1,12 @@
 {#include layout/base}
 
-{#title}Events - {district.getAbbreviation().toUpperCase()}{/title}
+{#title}{district.year} {district.getAbbr().toUpperCase()} Events{/title}
 
 {#breadcrumb}
 <ol class="breadcrumb" style="display: flex; list-style: none; padding: 0; gap: 0.5rem;">
     <li><a href="/districts/{district.year}">{district.year} Districts</a></li>
     <li>&rsaquo;</li>
-    <li>{district.displayName}</li>
+    <li>{district.name}</li>
 </ol>
 {/breadcrumb}
 
@@ -56,9 +56,9 @@
 {/include}
 
 <style>
-table td a{
-    display: block;
-    text-decoration: none;
-    color: inherit;
-}
+    table td a {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
 </style>

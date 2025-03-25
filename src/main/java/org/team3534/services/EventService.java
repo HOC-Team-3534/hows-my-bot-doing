@@ -1,56 +1,44 @@
 package org.team3534.services;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.tba.api.EventApi;
-import com.tba.model.Event;
-import com.tba.model.EventOPRs;
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Produces;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.team3534.dao.EventDao;
+import org.team3534.entity.EventEntity;
+import org.team3534.sync.EventSynchronizer;
 
 @Produces
 @ApplicationScoped
+@Timed
 public class EventService {
-    private Cache<String, Event> eventCache;
-    private Cache<String, EventOPRs> eventOprsCache;
 
-    @Inject EventApi eventApi;
+    @Inject
+    EventApi eventApi;
 
-    @PostConstruct
-    void init() {
-        eventCache =
-                Caffeine.newBuilder()
-                        .expireAfterWrite(10, TimeUnit.MINUTES)
-                        .maximumSize(100)
-                        .build();
+    @Inject
+    EventDao eventDao;
 
-        eventOprsCache =
-                Caffeine.newBuilder()
-                        .expireAfterWrite(10, TimeUnit.MINUTES)
-                        .maximumSize(100)
-                        .build();
+    @Inject
+    EventSynchronizer eventSynchronizer;
+
+    public EventEntity getEvent(String key) {
+        var event = eventDao.find(key);
+
+        if (event != null)
+            return event;
+
+        return eventSynchronizer.syncEvent(key);
     }
 
-    public Event getEvent(String key) {
-        return eventCache.get(key, this::fetchEventFromApi);
-    }
+    public List<EventEntity> getEventsByYear(int year) {
+        var events = eventDao.findByYear(year);
 
-    private Event fetchEventFromApi(String key) {
-        return eventApi.getEvent(key, "");
-    }
+        if (events.size() > 0)
+            return events;
 
-    public void putEventInCache(Event event) {
-        eventCache.put(event.getKey(), event);
-    }
-
-    public EventOPRs getEventOprs(String key) {
-        return eventOprsCache.get(key, this::fetchEventOPRsFromApi);
-    }
-
-    private EventOPRs fetchEventOPRsFromApi(String key) {
-        return eventApi.getEventOPRs(key, "");
+        return eventSynchronizer.syncEventsByYear(year);
     }
 }

@@ -2,8 +2,6 @@ package org.team3534.resources;
 
 import com.tba.api.EventApi;
 import com.tba.api.EventsApi;
-import com.tba.model.DistrictList;
-import com.tba.model.Event;
 import com.tba.model.TeamSimple;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
@@ -21,11 +19,15 @@ import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.team3534.entity.DistrictEntity;
+import org.team3534.entity.EventEntity;
 import org.team3534.services.EventService;
 import org.team3534.services.TeamService;
 
 @Path("/events")
 @Produces(MediaType.TEXT_HTML)
+@Timed
 public class EventResource {
     @CheckedTemplate
     static class Templates {
@@ -36,26 +38,30 @@ public class EventResource {
                 Collection<EventWithChildren> events);
 
         static native TemplateInstance teams(
-                Event event,
-                Event parentEvent,
+                EventEntity event,
+                EventEntity parentEvent,
                 List<TeamSimple> teams,
                 Map<String, Float> oprs,
                 Map<String, Float> highestOprs);
     }
 
-    @Inject EventApi eventApi;
+    @Inject
+    EventApi eventApi;
 
-    @Inject EventsApi eventsApi;
+    @Inject
+    EventsApi eventsApi;
 
-    @Inject EventService eventService;
+    @Inject
+    EventService eventService;
 
-    @Inject TeamService teamService;
+    @Inject
+    TeamService teamService;
 
     @Value
     @Data
     @RequiredArgsConstructor
     public static class DistrictWithEvents {
-        DistrictList district;
+        DistrictEntity district;
         List<EventWithChildren> events = new ArrayList<>();
     }
 
@@ -63,14 +69,14 @@ public class EventResource {
     @Data
     @RequiredArgsConstructor
     public static class EventWithChildren {
-        Event event;
+        EventEntity event;
         List<EventWithChildren> children = new ArrayList<>();
     }
 
     @GET
     @Path("/{year:\\d+}")
     public TemplateInstance list(int year) {
-        var rawEvents = eventsApi.getEventsByYear(year, "");
+        var rawEvents = eventService.getEventsByYear(year);
 
         var districtsMap = new HashMap<String, DistrictWithEvents>();
         var eventsMap = new HashMap<String, EventWithChildren>();
@@ -82,16 +88,15 @@ public class EventResource {
         for (var event : eventsMap.values()) {
             var parent = eventsMap.get(event.event.getParentEventKey());
 
-            if (parent != null) parent.children.add(event);
+            if (parent != null)
+                parent.children.add(event);
         }
 
-        var events =
-                eventsMap.values().stream()
-                        .filter(
-                                event ->
-                                        event.event.getParentEventKey() == null
-                                                || event.event.getParentEventKey() == "")
-                        .collect(Collectors.toList());
+        var events = eventsMap.values().stream()
+                .filter(
+                        event -> event.event.getParentEventKey() == null
+                                || event.event.getParentEventKey() == "")
+                .collect(Collectors.toList());
 
         for (var event : events) {
             if (event.event.getDistrict() != null) {
@@ -106,10 +111,9 @@ public class EventResource {
             }
         }
 
-        events =
-                events.stream()
-                        .filter(event -> event.event.getDistrict() == null)
-                        .collect(Collectors.toList());
+        events = events.stream()
+                .filter(event -> event.event.getDistrict() == null)
+                .collect(Collectors.toList());
 
         return Templates.list(year, List.of(2024, 2025), districtsMap.values(), events);
     }
@@ -117,24 +121,12 @@ public class EventResource {
     @GET
     @Path("/{key}")
     public TemplateInstance teams(String key) {
-        var teams = eventApi.getEventTeamsSimple(key, "");
+        var teams = teamService.getTeamsByEvent(key);
         var event = eventService.getEvent(key);
 
-        var oprs = eventApi.getEventOPRs(key, "");
-
-        var highestOprs =
-                teams.stream()
-                        .collect(
-                                Collectors.toMap(
-                                        TeamSimple::getKey,
-                                        team ->
-                                                teamService.getHighestOPR(
-                                                        team.getKey(), event.getYear())));
-
-        var parent =
-                event.getParentEventKey() == null || event.getParentEventKey() == ""
-                        ? null
-                        : eventService.getEvent(event.getParentEventKey());
+        var parent = event.getParentEventKey() == null || event.getParentEventKey() == ""
+                ? null
+                : eventService.getEvent(event.getParentEventKey());
 
         return Templates.teams(event, parent, teams, oprs.getOprs(), highestOprs);
     }

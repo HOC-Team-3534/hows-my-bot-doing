@@ -12,30 +12,30 @@
 {#content}
 <div class="row">
     <div class="twelve columns">
-            {#for district in districtEvents}
-            <h2>{district.district.displayName}</h2>
+        {#for district in districtEvents}
+        <h2><a href="/districts/{district.district.key}">{district.district.name}</a></h2>
 
 
-            <ul class="u-full-width">
+        <ul class="u-full-width">
             {#for event in district.events}
             <a href="/events/{event.event.key}">
                 <li>{event.event.name}</li>
             </a>
             {#if event.children.size() == 0}
             {#else}
-             <ul class="u-full-width">
-            {#for childEvent in event.children}
-            <a href="/events/{childEvent.event.key}">
-                <li>{childEvent.event.getShortName()}</li>
-            </a>
-            {/for}
+            <ul class="u-full-width">
+                {#for childEvent in event.children}
+                <a href="/events/{childEvent.event.key}">
+                    <li>{childEvent.event.getShortName()}</li>
+                </a>
+                {/for}
             </ul>
             {/if}
             {/for}
-            </ul>
-            {/for}
+        </ul>
+        {/for}
 
- <ul class="u-full-width">
+        <ul class="u-full-width">
             {#for event in events}
             <a href="/events/{event.event.key}">
                 <li>{event.event.name}</li>
@@ -43,15 +43,15 @@
             {#if event.children.size() == 0}
             {#else}
             <ul class="u-full-width">
-            {#for childEvent in event.children}
-            <a href="/events/{childEvent.event.key}">
-                <li>{childEvent.event.getShortName()}</li>
-            </a>
-            {/for}
+                {#for childEvent in event.children}
+                <a href="/events/{childEvent.event.key}">
+                    <li>{childEvent.event.getShortName()}</li>
+                </a>
+                {/for}
             </ul>
             {/if}
             {/for}
-            </ul>
+        </ul>
     </div>
 </div>
 {/content}
