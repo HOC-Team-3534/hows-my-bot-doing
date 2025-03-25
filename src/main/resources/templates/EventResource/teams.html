@@ -6,7 +6,8 @@
 	<li><a href="/events/{event.year}">{event.year} Events</a></li>
 	<li>&rsaquo;</li>
 	{#if event.getDistrict() != null}
-	<li><a href="/districts/{event.getDistrict().key}/events">{event.getDistrict().getAbbreviation().toUpperCase()} {event.year}</a></li>
+	<li><a href="/districts/{event.getDistrict().key}/events">{event.getDistrict().getAbbreviation().toUpperCase()}
+			{event.year}</a></li>
 	<li>&rsaquo;</li>
 	{/if}
 	{#if parentEvent != null}
@@ -26,6 +27,11 @@
 					<th>#</th>
 					<th>Name</th>
 					<th>City</th>
+					{#if oprs.size() == 0}
+					{#else}
+					<th>OPR</th>
+					{/if}
+					<th>Highest Season OPR</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -34,6 +40,11 @@
 					<td>{it.teamNumber}</td>
 					<td>{it.nickname}</td>
 					<td>{it.city}</td>
+					{#if oprs.size() == 0}
+					{#else}
+					<td>{oprs.get(it.key)}</td>
+					{/if}
+					<td>{highestOprs.get(it.key)}</td>
 				</tr>
 				{/each}
 			</tbody>

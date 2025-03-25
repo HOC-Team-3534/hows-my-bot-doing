@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.team3534.services.EventService;
+import org.team3534.services.TeamService;
 
 @Path("/events")
 @Produces(MediaType.TEXT_HTML)
@@ -33,12 +35,21 @@ public class EventResource {
                 Collection<DistrictWithEvents> districtEvents,
                 Collection<EventWithChildren> events);
 
-        static native TemplateInstance teams(Event event, Event parentEvent, List<TeamSimple> teams);
+        static native TemplateInstance teams(
+                Event event,
+                Event parentEvent,
+                List<TeamSimple> teams,
+                Map<String, Float> oprs,
+                Map<String, Float> highestOprs);
     }
 
     @Inject EventApi eventApi;
 
     @Inject EventsApi eventsApi;
+
+    @Inject EventService eventService;
+
+    @Inject TeamService teamService;
 
     @Value
     @Data
@@ -107,27 +118,24 @@ public class EventResource {
     @Path("/{key}")
     public TemplateInstance teams(String key) {
         var teams = eventApi.getEventTeamsSimple(key, "");
-        var event = getEvent(key);
+        var event = eventService.getEvent(key);
 
-        var parent = event.getParentEventKey() == null || event.getParentEventKey() == "" ? null : getEvent(event.getParentEventKey());
-        return Templates.teams(event, parent, teams);
-    }
+        var oprs = eventApi.getEventOPRs(key, "");
 
-    Map<String, Event> eventMap = new HashMap<>();
+        var highestOprs =
+                teams.stream()
+                        .collect(
+                                Collectors.toMap(
+                                        TeamSimple::getKey,
+                                        team ->
+                                                teamService.getHighestOPR(
+                                                        team.getKey(), event.getYear())));
 
-    Event getEvent(String key) {
-        var event = eventMap.get(key);
+        var parent =
+                event.getParentEventKey() == null || event.getParentEventKey() == ""
+                        ? null
+                        : eventService.getEvent(event.getParentEventKey());
 
-        if (event != null) return event;
-
-        event = eventApi.getEvent(key, "");
-
-        addEvent(key, event);
-
-        return event;
-    }
-
-    void addEvent(String key, Event event) {
-        eventMap.put(key, event);
+        return Templates.teams(event, parent, teams, oprs.getOprs(), highestOprs);
     }
 }

@@ -44,6 +44,9 @@ dependencies {
 
     implementation 'io.quarkus:quarkus-hibernate-validator'
     implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+
+    implementation 'org.dflib:dflib:2.0.0-M1'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 }
 
 group 'org.team3534'

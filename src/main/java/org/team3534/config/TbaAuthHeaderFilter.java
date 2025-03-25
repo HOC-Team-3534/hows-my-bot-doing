@@ -1,11 +1,9 @@
 package org.team3534.config;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import org.team3534.env.EnvironmentConfig;
 
-@ApplicationScoped
 public class TbaAuthHeaderFilter implements ClientRequestFilter {
     @Override
     public void filter(ClientRequestContext requestContext) {
