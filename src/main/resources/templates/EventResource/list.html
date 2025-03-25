@@ -1,0 +1,59 @@
+{#include layout/base}
+{#title}{year} Events{/title}
+
+{#breadcrumb}
+<div class="row">
+    <div class="twelve columns">
+        <h1>{year} Events</h1>
+    </div>
+</div>
+{/breadcrumb}
+
+{#content}
+<div class="row">
+    <div class="twelve columns">
+            {#for district in districtEvents}
+            <h2>{district.district.displayName}</h2>
+
+
+            <ul class="u-full-width">
+            {#for event in district.events}
+            <a href="/events/{event.event.key}">
+                <li>{event.event.name}</li>
+            </a>
+            {#if event.children.size() == 0}
+            {#else}
+             <ul class="u-full-width">
+            {#for childEvent in event.children}
+            <a href="/events/{childEvent.event.key}">
+                <li>{childEvent.event.getShortName()}</li>
+            </a>
+            {/for}
+            </ul>
+            {/if}
+            {/for}
+            </ul>
+            {/for}
+
+ <ul class="u-full-width">
+            {#for event in events}
+            <a href="/events/{event.event.key}">
+                <li>{event.event.name}</li>
+            </a>
+            {#if event.children.size() == 0}
+            {#else}
+            <ul class="u-full-width">
+            {#for childEvent in event.children}
+            <a href="/events/{childEvent.event.key}">
+                <li>{childEvent.event.getShortName()}</li>
+            </a>
+            {/for}
+            </ul>
+            {/if}
+            {/for}
+            </ul>
+    </div>
+</div>
+{/content}
+
+{/include}

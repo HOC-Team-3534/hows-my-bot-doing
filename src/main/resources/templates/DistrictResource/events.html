@@ -1,4 +1,4 @@
-{#include layout/base.html}
+{#include layout/base}
 
 {#title}Events - {district.getAbbreviation().toUpperCase()}{/title}
 
@@ -38,10 +38,10 @@
                 <tbody>
                     {#each events}
                     <tr>
-                        <td>{it.name}</td>
-                        <td>{it.city}</td>
-                        <td>{it.startDate}</td>
-                        <td>{it.endDate}</td>
+                        <td><a href="/events/{it.key}">{it.name}</a></td>
+                        <td><a href="/events/{it.key}">{it.city}</a></td>
+                        <td><a href="/events/{it.key}">{it.startDate}</a></td>
+                        <td><a href="/events/{it.key}">{it.endDate}</a></td>
                     </tr>
                     {/each}
                 </tbody>
@@ -54,3 +54,11 @@
 {/content}
 
 {/include}
+
+<style>
+table td a{
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+</style>

@@ -1,5 +1,5 @@
-{#include layout/base.html}
-{#title}{district.year} {district.abbreviation} Teams{/title}
+{#include layout/base}
+{#title}{district.year} {district.abbreviation} Rankings{/title}
 
 {#breadcrumb}
 <ol class="breadcrumb" style="display: flex; list-style: none; padding: 0; gap: 0.5rem;">
@@ -26,17 +26,19 @@
 		<table class="u-full-width">
 			<thead>
 				<tr>
-					<th>#</th>
-					<th>Name</th>
-					<th>City</th>
+					<th>Rank</th>
+					<th>Team #</th>
+					<th>Point Total</th>
+					<th>Events Played</th>
 				</tr>
 			</thead>
 			<tbody>
-				{#each teams}
+				{#each rankings}
 				<tr>
-					<td>{it.teamNumber}</td>
-					<td>{it.nickname}</td>
-					<td>{it.city}</td>
+					<td>{it.rank}</td>
+					<td>{it.getTeamKey().replace("frc", "")}</td>
+					<td>{it.pointTotal}</td>
+					<td>{it.getEventPoints().size()}</td>
 				</tr>
 				{/each}
 			</tbody>

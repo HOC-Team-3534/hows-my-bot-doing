@@ -1,0 +1,44 @@
+{#include layout/base}
+{#title}{event.shortName} Teams {/title}
+
+{#breadcrumb}
+<ol class="breadcrumb" style="display: flex; list-style: none; padding: 0; gap: 0.5rem;">
+	<li><a href="/events/{event.year}">{event.year} Events</a></li>
+	<li>&rsaquo;</li>
+	{#if event.getDistrict() != null}
+	<li><a href="/districts/{event.getDistrict().key}/events">{event.getDistrict().getAbbreviation().toUpperCase()} {event.year}</a></li>
+	<li>&rsaquo;</li>
+	{/if}
+	{#if parentEvent != null}
+	<li><a href="/events/{parentEvent.key}">{parentEvent.getShortName()}</a></li>
+	<li>&rsaquo;</li>
+	{/if}
+	<li>{event.shortName}</li>
+</ol>
+{/breadcrumb}
+
+{#content}
+<div class="row">
+	<div class="twelve columns">
+		<table class="u-full-width">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Name</th>
+					<th>City</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each teams}
+				<tr>
+					<td>{it.teamNumber}</td>
+					<td>{it.nickname}</td>
+					<td>{it.city}</td>
+				</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+</div>
+{/content}
+{/include}

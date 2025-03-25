@@ -119,7 +119,7 @@ openApiGenerate {
     // Use a JAX-RS spec generator that works with Quarkus
     generatorName = "jaxrs-spec"
     // Point directly to the Blue Alliance Swagger API JSON URL
-    inputSpec = "$rootDir/app/src/main/resources/api_v3.json"
+    inputSpec = "$rootDir/src/main/resources/api_v3.json"
     // Specify where to output the generated code
     outputDir = "$buildDir/generated"
     // Package names for the generated code

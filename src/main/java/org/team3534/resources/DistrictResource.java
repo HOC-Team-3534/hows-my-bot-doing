@@ -2,7 +2,6 @@ package org.team3534.resources;
 
 import com.tba.api.DistrictApi;
 import com.tba.api.DistrictsApi;
-import com.tba.model.Award;
 import com.tba.model.AwardRecipient;
 import com.tba.model.DistrictList;
 import com.tba.model.DistrictRanking;
@@ -15,7 +14,6 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,16 +31,16 @@ public class DistrictResource {
 
         static native TemplateInstance teams(DistrictList district, List<TeamSimple> teams);
 
-        static native TemplateInstance rankings(DistrictList district, List<DistrictRanking> rankings);
+        static native TemplateInstance rankings(
+                DistrictList district, List<DistrictRanking> rankings);
 
-        static native TemplateInstance awards(DistrictList district, Map<String, List<AwardRecipient>> awardsMap);
+        static native TemplateInstance awards(
+                DistrictList district, Map<String, List<AwardRecipient>> awardsMap);
     }
 
-    @Inject
-    DistrictsApi districtsApi;
+    @Inject DistrictsApi districtsApi;
 
-    @Inject
-    DistrictApi districtApi;
+    @Inject DistrictApi districtApi;
 
     @GET
     @Path("/{year:\\d+}")
@@ -57,6 +55,7 @@ public class DistrictResource {
         var events = districtApi.getDistrictEventsSimple(key, "");
         var district = events.get(0).getDistrict();
         addDistrict(key, district);
+        events.sort((event1, event2) -> event1.getEndDate().compareTo(event2.getEndDate()));
         return Templates.events(district, events);
     }
 
@@ -103,8 +102,7 @@ public class DistrictResource {
     DistrictList getDistrict(String key) {
         var district = districtMap.get(key);
 
-        if (district != null)
-            return district;
+        if (district != null) return district;
 
         var events = districtApi.getDistrictEventsSimple(key, "");
         district = events.get(0).getDistrict();
