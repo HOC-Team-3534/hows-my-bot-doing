@@ -16,6 +16,10 @@ public class DistrictDao {
         em.merge(districtEntity);
     }
 
+    public void upsert(List<DistrictEntity> districtEntities) {
+        districtEntities.forEach(this::upsert);
+    }
+
     public DistrictEntity find(String key) {
         return em.find(DistrictEntity.class, key);
     }

@@ -2,7 +2,6 @@ package org.team3534.resources;
 
 import com.tba.api.EventApi;
 import com.tba.api.EventsApi;
-import com.tba.model.TeamSimple;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
@@ -14,12 +13,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.eclipse.microprofile.metrics.annotation.Timed;
+import org.team3534.dao.TeamDao.TeamWithEventStats;
 import org.team3534.entity.DistrictEntity;
 import org.team3534.entity.EventEntity;
 import org.team3534.services.EventService;
@@ -38,11 +37,7 @@ public class EventResource {
                 Collection<EventWithChildren> events);
 
         static native TemplateInstance teams(
-                EventEntity event,
-                EventEntity parentEvent,
-                List<TeamSimple> teams,
-                Map<String, Float> oprs,
-                Map<String, Float> highestOprs);
+                EventEntity event, EventEntity parentEvent, List<TeamWithEventStats> teams);
     }
 
     @Inject EventApi eventApi;
@@ -127,6 +122,6 @@ public class EventResource {
                         ? null
                         : eventService.getEvent(event.getParentEventKey());
 
-        return Templates.teams(event, parent, teams, oprs.getOprs(), highestOprs);
+        return Templates.teams(event, parent, teams);
     }
 }

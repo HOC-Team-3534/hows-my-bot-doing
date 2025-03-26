@@ -16,6 +16,10 @@ public class EventOprsDao {
         em.merge(eventOprsEntity);
     }
 
+    public void upsert(List<EventOprsEntity> eventOprsEntities) {
+        eventOprsEntities.forEach(this::upsert);
+    }
+
     public List<EventOprsEntity> findAll() {
         var query = em.createQuery("SELECT et FROM EventOprsEntity et", EventOprsEntity.class);
 

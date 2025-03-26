@@ -27,7 +27,7 @@
 					<th>#</th>
 					<th>Name</th>
 					<th>City</th>
-					{#if oprs.size() == 0}
+					{#if event.getOprs() == null}
 					{#else}
 					<th>OPR</th>
 					{/if}
@@ -37,14 +37,14 @@
 			<tbody>
 				{#each teams}
 				<tr>
-					<td>{it.teamNumber}</td>
-					<td>{it.nickname}</td>
-					<td>{it.city}</td>
-					{#if oprs.size() == 0}
+					<td>{it.getKey().replace("frc", "")}</td>
+					<td>{it.getName()}</td>
+					<td>{it.getCity()}</td>
+					{#if event.getOprs() == null}
 					{#else}
-					<td>{oprs.get(it.key)}</td>
+					<td>{it.getTeamEventOprs().getOprs()}</td>
 					{/if}
-					<td>{highestOprs.get(it.key)}</td>
+					<td>{it.getHighestOprs()}</td>
 				</tr>
 				{/each}
 			</tbody>

@@ -3,6 +3,7 @@ package org.team3534.services;
 import io.quarkus.scheduler.Scheduled;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import java.util.Calendar;
 import org.team3534.sync.EventSynchronizer;
 import org.team3534.sync.TeamSynchronizer;
 
@@ -15,12 +16,11 @@ public class DataSyncService {
 
     @Scheduled(every = "P7D")
     public void syncSeasonData() {
-        var events = eventSynchronizer.syncEventsByYear(2025);
-        for (var event : events) {
-            eventSynchronizer.syncEventTeams(event.getKey());
-            eventSynchronizer.syncEventOprs(event.getKey());
-        }
+        syncSeasonData(Calendar.getInstance().getWeekYear());
+    }
 
-        teamSynchronizer.syncTeamsByYear(2025);
+    public void syncSeasonData(int year) {
+        eventSynchronizer.syncEventsByYear(year);
+        teamSynchronizer.syncTeamsByYear(year);
     }
 }

@@ -4,8 +4,6 @@ import com.tba.api.DistrictApi;
 import com.tba.api.DistrictsApi;
 import com.tba.model.AwardRecipient;
 import com.tba.model.DistrictRanking;
-import com.tba.model.EventSimple;
-import com.tba.model.TeamSimple;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
@@ -22,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.team3534.entity.DistrictEntity;
+import org.team3534.entity.EventEntity;
+import org.team3534.entity.TeamEntity;
 import org.team3534.services.DistrictService;
 
 @Path("/districts")
@@ -33,9 +33,9 @@ public class DistrictResource {
         static native TemplateInstance list(
                 int year, List<Integer> years, List<DistrictEntity> districts);
 
-        static native TemplateInstance events(DistrictEntity district, List<EventSimple> events);
+        static native TemplateInstance events(DistrictEntity district, List<EventEntity> events);
 
-        static native TemplateInstance teams(DistrictEntity district, List<TeamSimple> teams);
+        static native TemplateInstance teams(DistrictEntity district, List<TeamEntity> teams);
 
         static native TemplateInstance rankings(
                 DistrictEntity district, List<DistrictRanking> rankings);
@@ -73,8 +73,8 @@ public class DistrictResource {
     @GET
     @Path("/{key}/events")
     public TemplateInstance events(String key) {
-        var events = districtApi.getDistrictEventsSimple(key, "");
         var district = districtService.getDistrict(key);
+        var events = district.getEvents();
         events.sort((event1, event2) -> event1.getEndDate().compareTo(event2.getEndDate()));
         return Templates.events(district, events);
     }
@@ -82,15 +82,18 @@ public class DistrictResource {
     @GET
     @Path("/{key}/teams")
     public TemplateInstance teams(String key) {
-        var teams = districtApi.getDistrictTeamsSimple(key, "");
         var district = districtService.getDistrict(key);
+        var teams =
+                new ArrayList<>(
+                        district.getDistrictTeams().stream().map(dt -> dt.getTeam()).toList());
+        teams.sort((team1, team2) -> team1.getTeamNumber() - team2.getTeamNumber());
         return Templates.teams(district, teams);
     }
 
     @GET
     @Path("/{key}/rankings")
     public TemplateInstance rankings(String key) {
-        var rankings = districtApi.getDistrictRankings(key, "");
+        var rankings = districtApi.getDistrictRankings(key, "").await().indefinitely();
         var district = districtService.getDistrict(key);
         return Templates.rankings(district, rankings);
     }
@@ -98,7 +101,7 @@ public class DistrictResource {
     @GET
     @Path("/{key}/awards")
     public TemplateInstance awards(String key) {
-        var awards = districtApi.getDistrictAwards(key, "");
+        var awards = districtApi.getDistrictAwards(key, "").await().indefinitely();
         var district = districtService.getDistrict(key);
 
         var awardsMap = new HashMap<String, List<AwardRecipient>>();

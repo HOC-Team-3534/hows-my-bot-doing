@@ -16,6 +16,10 @@ public class EventTeamDao {
         em.merge(eventTeamEntity);
     }
 
+    public void upsert(List<EventTeamEntity> eventTeamEntities) {
+        eventTeamEntities.forEach(this::upsert);
+    }
+
     public List<EventTeamEntity> findAll() {
         var query = em.createQuery("SELECT et FROM EventTeamEntity et", EventTeamEntity.class);
 

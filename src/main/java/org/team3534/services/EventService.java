@@ -26,7 +26,9 @@ public class EventService {
 
         if (event != null) return event;
 
-        return eventSynchronizer.syncEvent(key);
+        eventSynchronizer.syncEvent(key);
+
+        return null;
     }
 
     public List<EventEntity> getEventsByYear(int year) {
@@ -34,6 +36,8 @@ public class EventService {
 
         if (events.size() > 0) return events;
 
-        return eventSynchronizer.syncEventsByYear(year);
+        eventSynchronizer.syncEventsByYear(year);
+
+        return List.of();
     }
 }

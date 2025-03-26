@@ -14,32 +14,19 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit Jupiter for testing.
-    //testImplementation libs.junit.jupiter
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
-
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // Use Lombok as compileOnly and for annotation processing.
     compileOnly 'org.projectlombok:lombok:1.18.36'
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
-    // For tests, if needed:
-    testCompileOnly 'org.projectlombok:lombok:1.18.36'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
-
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
 
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
     implementation 'io.quarkus:quarkus-rest'
-    //implementation 'io.quarkus:quarkus-rest-jsonb'
-    //implementation 'io.quarkus:quarkus-rest-jackson'
     implementation 'io.quarkus:quarkus-rest-client'
     implementation 'io.quarkus:quarkus-rest-client-jackson'
     implementation 'io.quarkus:quarkus-arc'
     implementation 'io.quarkus:quarkus-smallrye-metrics'
-    testImplementation 'io.quarkus:quarkus-junit5'
-    testImplementation 'io.rest-assured:rest-assured'
     implementation 'io.quarkiverse.qute.web:quarkus-qute-web'
     implementation 'io.quarkus:quarkus-hibernate-orm-panache'
     implementation 'io.quarkus:quarkus-jdbc-h2'
@@ -50,8 +37,19 @@ dependencies {
 
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
-    implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
-    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    /* TEST */
+    // Use JUnit Jupiter for testing.
+    //testImplementation libs.junit.jupiter
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // For tests, if needed:
+    testCompileOnly 'org.projectlombok:lombok:1.18.36'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+    // quarkus
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
 }
 
 group 'org.team3534'
@@ -141,6 +139,7 @@ openApiGenerate {
         useSwaggerAnnotations : "false",
         dateLibrary           : "java8",
         useJakartaEe          : "true",
+        supportAsync          : "true",
         useMutiny             : "true"
         //serverBasePath        : "/api/v3"  // <--- This adds /api/v3 to every @Path
     ]
