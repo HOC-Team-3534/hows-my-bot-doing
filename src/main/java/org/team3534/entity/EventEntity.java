@@ -1,5 +1,6 @@
 package org.team3534.entity;
 
+import com.querydsl.core.annotations.QueryEntity;
 import com.tba.model.Event;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@QueryEntity
 @Entity
 @Table(name = "event")
 @Data

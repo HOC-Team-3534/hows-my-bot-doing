@@ -1,19 +1,26 @@
 package org.team3534.dao;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.Data;
 import lombok.experimental.Delegate;
-
-import java.util.List;
 import org.team3534.entity.TeamEntity;
 
 @ApplicationScoped
 public class TeamDao {
-    @Inject
-    EntityManager em;
+    @Inject EntityManager em;
+
+    private JPAQueryFactory queryFactory;
+
+    @PostConstruct
+    public void init() {
+        queryFactory = new JPAQueryFactory(em);
+    }
 
     @Transactional
     public void upsert(TeamEntity teamEntity) {
@@ -21,9 +28,10 @@ public class TeamDao {
     }
 
     public List<TeamEntity> findByEvent(String eventKey) {
-        var query = em.createQuery(
-                "SELECT t FROM EventTeamEntity et JOIN TeamEntity t ON et.teamKey = t.key AND et.eventKey = :eventKey",
-                TeamEntity.class);
+        var query =
+                em.createQuery(
+                        "SELECT t FROM EventTeamEntity et JOIN TeamEntity t ON et.teamKey = t.key AND et.eventKey = :eventKey",
+                        TeamEntity.class);
 
         query.setParameter("eventKey", eventKey);
 
@@ -32,14 +40,14 @@ public class TeamDao {
 
     @Data
     public static class TeamWithEventStats {
-        @Delegate
-        private TeamEntity teamEntity;
+        @Delegate private TeamEntity teamEntity;
         private float oprs, dprs, ccwms, highestOprs;
     }
 
     public List<TeamWithEventStats> findByEventWithStats(String eventKey) {
-        var query = em.createQuery(
-                """
+        var query =
+                em.createQuery(
+                        """
                             SELECT t, eo.oprs, eo.ddprs, eo.ccwms, o.highestOprs
                             FROM EventTeamEntity et
                             JOIN TeamEntity t ON et.teamKey = t.key AND et.eventKey = :eventKey
@@ -55,7 +63,7 @@ public class TeamDao {
                                 GROUP BY etet.teamKey
                             ) o ON o.teamKey = t.key
                         """,
-                TeamWithEventStats.class);
+                        TeamWithEventStats.class);
 
         query.setParameter("eventKey", eventKey);
 

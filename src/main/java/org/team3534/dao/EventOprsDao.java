@@ -5,13 +5,11 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.List;
-
 import org.team3534.entity.EventOprsEntity;
 
 @ApplicationScoped
 public class EventOprsDao {
-    @Inject
-    EntityManager em;
+    @Inject EntityManager em;
 
     @Transactional
     public void upsert(EventOprsEntity eventOprsEntity) {

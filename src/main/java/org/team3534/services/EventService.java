@@ -15,20 +15,16 @@ import org.team3534.sync.EventSynchronizer;
 @Timed
 public class EventService {
 
-    @Inject
-    EventApi eventApi;
+    @Inject EventApi eventApi;
 
-    @Inject
-    EventDao eventDao;
+    @Inject EventDao eventDao;
 
-    @Inject
-    EventSynchronizer eventSynchronizer;
+    @Inject EventSynchronizer eventSynchronizer;
 
     public EventEntity getEvent(String key) {
         var event = eventDao.find(key);
 
-        if (event != null)
-            return event;
+        if (event != null) return event;
 
         return eventSynchronizer.syncEvent(key);
     }
@@ -36,8 +32,7 @@ public class EventService {
     public List<EventEntity> getEventsByYear(int year) {
         var events = eventDao.findByYear(year);
 
-        if (events.size() > 0)
-            return events;
+        if (events.size() > 0) return events;
 
         return eventSynchronizer.syncEventsByYear(year);
     }

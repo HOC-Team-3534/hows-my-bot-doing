@@ -15,19 +15,14 @@ import org.team3534.entity.EventTeamEntity;
 
 @ApplicationScoped
 public class EventSynchronizer {
-    @Inject
-    EventApi eventApi;
-    @Inject
-    EventsApi eventsApi;
+    @Inject EventApi eventApi;
+    @Inject EventsApi eventsApi;
 
-    @Inject
-    EventDao eventDao;
+    @Inject EventDao eventDao;
 
-    @Inject
-    EventTeamDao eventTeamDao;
+    @Inject EventTeamDao eventTeamDao;
 
-    @Inject
-    EventOprsDao eventOprsDao;
+    @Inject EventOprsDao eventOprsDao;
 
     public EventEntity syncEvent(String key) {
         var event = EventEntity.fromEvent(eventApi.getEvent(key, ""));
@@ -36,7 +31,8 @@ public class EventSynchronizer {
     }
 
     public List<EventEntity> syncEventsByYear(int year) {
-        var events = eventsApi.getEventsByYear(year, "").stream().map(EventEntity::fromEvent).toList();
+        var events =
+                eventsApi.getEventsByYear(year, "").stream().map(EventEntity::fromEvent).toList();
 
         events.forEach(eventDao::upsert);
 

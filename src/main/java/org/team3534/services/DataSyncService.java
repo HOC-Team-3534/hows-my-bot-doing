@@ -9,11 +9,9 @@ import org.team3534.sync.TeamSynchronizer;
 @ApplicationScoped
 public class DataSyncService {
 
-    @Inject
-    EventSynchronizer eventSynchronizer;
+    @Inject EventSynchronizer eventSynchronizer;
 
-    @Inject
-    TeamSynchronizer teamSynchronizer;
+    @Inject TeamSynchronizer teamSynchronizer;
 
     @Scheduled(every = "P7D")
     public void syncSeasonData() {

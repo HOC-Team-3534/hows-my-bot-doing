@@ -45,17 +45,13 @@ public class EventResource {
                 Map<String, Float> highestOprs);
     }
 
-    @Inject
-    EventApi eventApi;
+    @Inject EventApi eventApi;
 
-    @Inject
-    EventsApi eventsApi;
+    @Inject EventsApi eventsApi;
 
-    @Inject
-    EventService eventService;
+    @Inject EventService eventService;
 
-    @Inject
-    TeamService teamService;
+    @Inject TeamService teamService;
 
     @Value
     @Data
@@ -88,15 +84,16 @@ public class EventResource {
         for (var event : eventsMap.values()) {
             var parent = eventsMap.get(event.event.getParentEventKey());
 
-            if (parent != null)
-                parent.children.add(event);
+            if (parent != null) parent.children.add(event);
         }
 
-        var events = eventsMap.values().stream()
-                .filter(
-                        event -> event.event.getParentEventKey() == null
-                                || event.event.getParentEventKey() == "")
-                .collect(Collectors.toList());
+        var events =
+                eventsMap.values().stream()
+                        .filter(
+                                event ->
+                                        event.event.getParentEventKey() == null
+                                                || event.event.getParentEventKey() == "")
+                        .collect(Collectors.toList());
 
         for (var event : events) {
             if (event.event.getDistrict() != null) {
@@ -111,9 +108,10 @@ public class EventResource {
             }
         }
 
-        events = events.stream()
-                .filter(event -> event.event.getDistrict() == null)
-                .collect(Collectors.toList());
+        events =
+                events.stream()
+                        .filter(event -> event.event.getDistrict() == null)
+                        .collect(Collectors.toList());
 
         return Templates.list(year, List.of(2024, 2025), districtsMap.values(), events);
     }
@@ -124,9 +122,10 @@ public class EventResource {
         var teams = teamService.getTeamsByEvent(key);
         var event = eventService.getEvent(key);
 
-        var parent = event.getParentEventKey() == null || event.getParentEventKey() == ""
-                ? null
-                : eventService.getEvent(event.getParentEventKey());
+        var parent =
+                event.getParentEventKey() == null || event.getParentEventKey() == ""
+                        ? null
+                        : eventService.getEvent(event.getParentEventKey());
 
         return Templates.teams(event, parent, teams, oprs.getOprs(), highestOprs);
     }
