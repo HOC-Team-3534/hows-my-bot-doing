@@ -5,14 +5,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Produces;
 import java.util.List;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.team3534.dao.EventDao;
 import org.team3534.entity.EventEntity;
 import org.team3534.sync.EventSynchronizer;
 
 @Produces
 @ApplicationScoped
-@Timed
 public class EventService {
 
     @Inject EventApi eventApi;

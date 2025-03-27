@@ -4,18 +4,17 @@ import com.tba.api.TeamApi;
 import com.tba.api.TeamsApi;
 import com.tba.model.Team;
 import com.tba.model.TeamSimple;
-import io.smallrye.mutiny.Multi;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.team3534.dao.DistrictTeamDao;
 import org.team3534.dao.TeamDao;
 import org.team3534.entity.DistrictTeamEntity;
 import org.team3534.entity.TeamEntity;
 
 @ApplicationScoped
-@Timed
 public class TeamSynchronizer {
     @Inject TeamApi teamApi;
     @Inject TeamsApi teamsApi;
@@ -38,7 +37,7 @@ public class TeamSynchronizer {
     }
 
     public void syncTeam(String key) {
-        teamApi.getTeam(key, "").subscribe().with(this::syncTeam);
+        syncTeam(teamApi.getTeam(key, ""));
     }
 
     public TeamEntity syncTeam(TeamSimple teamSimple) {
@@ -53,30 +52,24 @@ public class TeamSynchronizer {
     }
 
     public void syncTeamDistricts(TeamEntity teamEntity) {
-        teamApi.getTeamDistricts(teamEntity.getKey(), "")
-                .map(
-                        teamDistricts ->
-                                teamDistricts.stream()
-                                        .map(districtSynchronizer::syncDistrict)
-                                        .toList())
-                .map(
-                        districtEntities ->
-                                DistrictTeamEntity.fromTeamDistricts(teamEntity, districtEntities))
-                .subscribe()
-                .with(districtTeamDao::upsert);
+        var teamDistricts = teamApi.getTeamDistricts(teamEntity.getKey(), "");
+        var districtEntities =
+                teamDistricts.stream().map(districtSynchronizer::syncDistrict).toList();
+        var districtTeamEntities =
+                DistrictTeamEntity.fromTeamDistricts(teamEntity, districtEntities);
+        districtTeamEntities.forEach(districtTeamDao::upsert);
     }
 
     public void syncTeamsByYear(int year) {
-        Multi.createBy()
-                .repeating()
-                .uni(
-                        () -> new AtomicInteger(),
-                        // For each page index, call teamsApi.getTeamsByYear(...)
-                        state -> teamsApi.getTeamsByYear(year, state.getAndIncrement(), ""))
-                // Stop once we get an empty list
-                .until(teams -> !teams.isEmpty())
-                .toUni()
-                .subscribe()
-                .with(teams -> teams.forEach(this::syncTeam));
+        var page = new AtomicInteger();
+
+        var teams = new ArrayList<Team>();
+        List<Team> pageOfTeams = null;
+        do {
+            pageOfTeams = teamsApi.getTeamsByYear(year, page.getAndIncrement(), "");
+            teams.addAll(pageOfTeams);
+        } while (pageOfTeams.size() > 0);
+
+        teams.forEach(this::syncTeam);
     }
 }

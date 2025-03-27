@@ -1,22 +1,22 @@
 {
     "java.configuration.updateBuildConfiguration": "interactive",
     "files.exclude": {
-        "build": false,
-        "gradle": false,
-        "java-microprofile": false,
-        ".gitattributes": false,
-        ".gitignore": false,
-        "gradlew": false,
-        "gradlew.bat": false,
-        "settings.gradle": false,
-        "gradle.properties": false,
-        ".gradle": false,
-        ".vscode": false,
-        "app\\build": false,
-        "app\\bin": false,
-        "app\\src\\test": false,
-        "app/bin/main": false,
-        "app/bin": false
+        "build": true,
+        "gradle": true,
+        "java-microprofile": true,
+        ".gitattributes": true,
+        ".gitignore": true,
+        "gradlew": true,
+        "gradlew.bat": true,
+        "settings.gradle": true,
+        "gradle.properties": true,
+        ".gradle": true,
+        ".vscode": true,
+        "app\\build": true,
+        "app\\bin": true,
+        "app\\src\\test": true,
+        "app/bin/main": true,
+        "app/bin": true
     },
     "qute.trace.server": "verbose"
 }

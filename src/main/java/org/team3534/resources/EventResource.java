@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.team3534.dao.TeamDao.TeamWithEventStats;
 import org.team3534.entity.DistrictEntity;
 import org.team3534.entity.EventEntity;
@@ -26,7 +25,6 @@ import org.team3534.services.TeamService;
 
 @Path("/events")
 @Produces(MediaType.TEXT_HTML)
-@Timed
 public class EventResource {
     @CheckedTemplate
     static class Templates {

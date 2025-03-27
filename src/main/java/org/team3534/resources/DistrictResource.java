@@ -18,7 +18,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.team3534.entity.DistrictEntity;
 import org.team3534.entity.EventEntity;
 import org.team3534.entity.TeamEntity;
@@ -26,7 +25,6 @@ import org.team3534.services.DistrictService;
 
 @Path("/districts")
 @Produces(MediaType.TEXT_HTML)
-@Timed
 public class DistrictResource {
     @CheckedTemplate
     static class Templates {
@@ -93,7 +91,7 @@ public class DistrictResource {
     @GET
     @Path("/{key}/rankings")
     public TemplateInstance rankings(String key) {
-        var rankings = districtApi.getDistrictRankings(key, "").await().indefinitely();
+        var rankings = districtApi.getDistrictRankings(key, "");
         var district = districtService.getDistrict(key);
         return Templates.rankings(district, rankings);
     }
@@ -101,7 +99,7 @@ public class DistrictResource {
     @GET
     @Path("/{key}/awards")
     public TemplateInstance awards(String key) {
-        var awards = districtApi.getDistrictAwards(key, "").await().indefinitely();
+        var awards = districtApi.getDistrictAwards(key, "");
         var district = districtService.getDistrict(key);
 
         var awardsMap = new HashMap<String, List<AwardRecipient>>();

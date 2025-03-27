@@ -5,7 +5,6 @@ import com.tba.api.EventsApi;
 import com.tba.model.Event;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.team3534.dao.EventDao;
 import org.team3534.dao.EventOprsDao;
 import org.team3534.dao.EventTeamDao;
@@ -16,7 +15,6 @@ import org.team3534.entity.EventTeamEntity;
 import org.team3534.services.TeamService;
 
 @ApplicationScoped
-@Timed
 public class EventSynchronizer {
     @Inject EventApi eventApi;
     @Inject EventsApi eventsApi;
@@ -34,7 +32,7 @@ public class EventSynchronizer {
     @Inject TeamService teamService;
 
     public void syncEvent(String key) {
-        eventApi.getEvent(key, "").subscribe().with(this::syncEvent);
+        syncEvent(eventApi.getEvent(key, ""));
     }
 
     public EventEntity syncEvent(Event event) {
@@ -50,27 +48,20 @@ public class EventSynchronizer {
     }
 
     public void syncEventsByYear(int year) {
-        eventsApi
-                .getEventsByYear(year, "")
-                .subscribe()
-                .with(events -> events.forEach(this::syncEvent));
+        eventsApi.getEventsByYear(year, "").stream().forEach(this::syncEvent);
     }
 
     public void syncEventTeams(EventEntity eventEntity) {
-        eventApi.getEventTeamsSimple(eventEntity.getKey(), "")
-                .map(teams -> teams.stream().map(teamSynchronizer::syncTeam).toList())
-                .map(teamEntities -> EventTeamEntity.fromEventTeams(eventEntity, teamEntities))
-                .subscribe()
-                .with(eventTeamDao::upsert);
+        var teamsSimple = eventApi.getEventTeamsSimple(eventEntity.getKey(), "");
+        var teamEntities = teamsSimple.stream().map(teamSynchronizer::syncTeam).toList();
+        var eventTeamEntities = EventTeamEntity.fromEventTeams(eventEntity, teamEntities);
+        eventTeamEntities.forEach(eventTeamDao::upsert);
     }
 
     public void syncEventOprs(EventEntity eventEntity) {
-        eventApi.getEventOPRs(eventEntity.getKey(), "")
-                .map(
-                        eventOprs ->
-                                EventOprsEntity.fromEventOprs(
-                                        eventEntity, eventOprs, teamService::getTeam))
-                .subscribe()
-                .with(eventOprsDao::upsert);
+        var eventOprs = eventApi.getEventOPRs(eventEntity.getKey(), "");
+        var eventOprsEntities =
+                EventOprsEntity.fromEventOprs(eventEntity, eventOprs, teamService::getTeam);
+        eventOprsEntities.forEach(eventOprsDao::upsert);
     }
 }

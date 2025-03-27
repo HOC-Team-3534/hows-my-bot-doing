@@ -5,12 +5,10 @@ import com.tba.api.DistrictsApi;
 import com.tba.model.DistrictList;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.team3534.dao.DistrictDao;
 import org.team3534.entity.DistrictEntity;
 
 @ApplicationScoped
-@Timed
 public class DistrictSynchronizer {
     @Inject DistrictApi districtApi;
     @Inject DistrictsApi districtsApi;
@@ -18,11 +16,9 @@ public class DistrictSynchronizer {
     @Inject DistrictDao districtDao;
 
     public void syncDistrictsByYear(int year) {
-        districtsApi
-                .getDistrictsByYear(year, "")
-                .map(districts -> districts.stream().map(DistrictEntity::fromDistrict).toList())
-                .subscribe()
-                .with(districtDao::upsert);
+        districtsApi.getDistrictsByYear(year, "").stream()
+                .map(DistrictEntity::fromDistrict)
+                .forEach(districtDao::upsert);
     }
 
     public DistrictEntity syncDistrict(DistrictList district) {

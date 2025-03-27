@@ -22,20 +22,29 @@ dependencies {
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
 
     implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    // quarkus-rest: for serving rest endpoints from the application
     implementation 'io.quarkus:quarkus-rest'
+    // quarkus-rest-client: for calling generated api calls
     implementation 'io.quarkus:quarkus-rest-client'
+    // quarkus-rest-client-jackson: for parsing called generated api calls
     implementation 'io.quarkus:quarkus-rest-client-jackson'
+    // quarkus-arc: cdi container tailored to quarkus, discovers @Inject, @ApplicationScoped, etc.
     implementation 'io.quarkus:quarkus-arc'
-    implementation 'io.quarkus:quarkus-smallrye-metrics'
-    implementation 'io.quarkiverse.qute.web:quarkus-qute-web'
+    // quarkus-micrometer-registery-prometheus: for collecting metrics on endpoints and internal method calls
+    implementation 'io.quarkus:quarkus-micrometer-registry-prometheus'
+    // quarkus-qute: for templating in html http responses
+    implementation 'io.quarkus:quarkus-qute'
+    // quarkus-hibernate-orm-panache: provides @Entity annotation and reduces boilerplate code
     implementation 'io.quarkus:quarkus-hibernate-orm-panache'
+    // quarkus-jdbc-h2: driver provided to EntityManager to connect to h2 in-memory database
     implementation 'io.quarkus:quarkus-jdbc-h2'
+    // quarkus-hibernate-validator: incorporates validation of columns of data through annotations
     implementation 'io.quarkus:quarkus-hibernate-validator'
+    // quarkus-scheduler: schedule tasks using annotations
     implementation 'io.quarkus:quarkus-scheduler'
 
+    // jackson-databind-nullable: fix for generated open api classes based on swagger
     implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
-
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 
     /* TEST */
     // Use JUnit Jupiter for testing.
@@ -139,8 +148,8 @@ openApiGenerate {
         useSwaggerAnnotations : "false",
         dateLibrary           : "java8",
         useJakartaEe          : "true",
-        supportAsync          : "true",
-        useMutiny             : "true"
+        supportAsync          : "false",
+        useMutiny             : "false"
         //serverBasePath        : "/api/v3"  // <--- This adds /api/v3 to every @Path
     ]
     configOptions = [
@@ -154,8 +163,6 @@ sourceSets.main.java {
     srcDirs += "$buildDir/generated/sources/annotationProcessor/java/main"
     exclude "**/invoker/**"
 }
-
-
 
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
