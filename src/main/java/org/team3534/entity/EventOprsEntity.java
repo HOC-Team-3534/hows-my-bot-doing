@@ -36,21 +36,21 @@ public class EventOprsEntity {
 
     public static List<EventOprsEntity> fromEventOprs(
             EventEntity eventEntity,
-            EventOPRs eventOprs,
-            Function<String, TeamEntity> teamEntityFunction) {
+            List<TeamEntity> teamEntities, 
+            EventOPRs eventOprs) {
         var oprs = eventOprs.getOprs();
         var ddprs = eventOprs.getDprs();
         var ccwms = eventOprs.getCcwms();
-        return eventOprs.getOprs().keySet().stream()
+        return teamEntities.stream()
                 .map(
-                        teamKey -> {
+                        teamEntity -> {
                             return new EventOprsEntity(
-                                    new EventTeamId(eventEntity.getKey(), teamKey),
-                                    teamEntityFunction.apply(teamKey),
+                                    new EventTeamId(eventEntity.getKey(), teamEntity.getKey()),
+                                    teamEntity,
                                     eventEntity,
-                                    oprs.get(teamKey),
-                                    ddprs.get(teamKey),
-                                    ccwms.get(teamKey));
+                                    oprs.get(teamEntity.getKey()),
+                                    ddprs.get(teamEntity.getKey()),
+                                    ccwms.get(teamEntity.getKey()));
                         })
                 .toList();
     }

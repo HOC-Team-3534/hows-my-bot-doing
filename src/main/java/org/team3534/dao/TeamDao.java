@@ -1,5 +1,7 @@
 package org.team3534.dao;
 
+import com.tba.model.Team;
+import com.tba.model.TeamSimple;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -22,8 +24,18 @@ public class TeamDao {
     @Inject EntityManager em;
 
     @Transactional
-    public void upsert(TeamEntity teamEntity) {
-        em.merge(teamEntity);
+    public TeamEntity upsert(TeamEntity teamEntity) {
+        return em.merge(teamEntity);
+    }
+
+    @Transactional
+    public TeamEntity upsertTeam(Team team) {
+        return em.merge(TeamEntity.fromTeam(team));
+    }
+
+    @Transactional
+    public TeamEntity upsertTeam(TeamSimple teamSimple) {
+        return em.merge(TeamEntity.fromTeam(teamSimple));
     }
 
     public TeamEntity find(String key) {

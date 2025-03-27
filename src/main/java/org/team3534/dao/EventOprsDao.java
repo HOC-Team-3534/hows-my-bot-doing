@@ -12,12 +12,13 @@ public class EventOprsDao {
     @Inject EntityManager em;
 
     @Transactional
-    public void upsert(EventOprsEntity eventOprsEntity) {
-        em.merge(eventOprsEntity);
+    public EventOprsEntity upsert(EventOprsEntity eventOprsEntity) {
+        return em.merge(eventOprsEntity);
     }
 
-    public void upsert(List<EventOprsEntity> eventOprsEntities) {
-        eventOprsEntities.forEach(this::upsert);
+    @Transactional
+    public List<EventOprsEntity> upsert(List<EventOprsEntity> eventOprsEntities) {
+        return eventOprsEntities.stream().map(em::merge).toList();
     }
 
     public List<EventOprsEntity> findAll() {

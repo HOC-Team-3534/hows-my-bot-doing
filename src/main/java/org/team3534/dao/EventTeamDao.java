@@ -12,12 +12,13 @@ public class EventTeamDao {
     @Inject EntityManager em;
 
     @Transactional
-    public void upsert(EventTeamEntity eventTeamEntity) {
-        em.merge(eventTeamEntity);
+    public EventTeamEntity upsert(EventTeamEntity eventTeamEntity) {
+        return em.merge(eventTeamEntity);
     }
 
-    public void upsert(List<EventTeamEntity> eventTeamEntities) {
-        eventTeamEntities.forEach(this::upsert);
+    @Transactional
+    public List<EventTeamEntity> upsert(List<EventTeamEntity> eventTeamEntities) {
+        return eventTeamEntities.stream().map(em::merge).toList();
     }
 
     public List<EventTeamEntity> findAll() {

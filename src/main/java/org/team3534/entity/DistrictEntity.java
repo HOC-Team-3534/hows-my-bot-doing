@@ -36,6 +36,7 @@ public class DistrictEntity {
     private List<DistrictTeamEntity> districtTeams;
 
     public static DistrictEntity fromDistrict(DistrictList district) {
+        if(district == null) return null;
         return new DistrictEntity(
                 district.getKey(),
                 district.getDisplayName(),

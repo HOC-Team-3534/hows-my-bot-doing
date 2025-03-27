@@ -4,6 +4,7 @@ import com.tba.api.DistrictApi;
 import com.tba.api.DistrictsApi;
 import com.tba.model.AwardRecipient;
 import com.tba.model.DistrictRanking;
+import io.micrometer.core.annotation.Timed;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
@@ -25,6 +26,7 @@ import org.team3534.services.DistrictService;
 
 @Path("/districts")
 @Produces(MediaType.TEXT_HTML)
+@Timed
 public class DistrictResource {
     @CheckedTemplate
     static class Templates {

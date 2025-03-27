@@ -82,15 +82,45 @@ compileTestJava {
     options.encoding = 'UTF-8'
 }
 
+openApiGenerate {
+    // Use a JAX-RS spec generator that works with Quarkus
+    generatorName = "jaxrs-spec"
+    // Point directly to the Blue Alliance Swagger API JSON URL
+    inputSpec = "$rootDir/src/main/resources/api_v3.json"
+    // Specify where to output the generated code
+    outputDir = "$buildDir/generated"
+    // Package names for the generated code
+    apiPackage = "com.tba.api"
+    modelPackage = "com.tba.model"
+    invokerPackage = "com.tba.invoker"
+    // Additional properties merged into the generation process:
+    additionalProperties = [
+        interfaceOnly         : "true",
+        returnResponse        : "false", // this tells the generator to return actual types
+        useSwaggerAnnotations : "false",
+        dateLibrary           : "java8",
+        useJakartaEe          : "true",
+        supportAsync          : "false",
+        useMutiny             : "false"
+        //serverBasePath        : "/api/v3"  // <--- This adds /api/v3 to every @Path
+    ]
+    configOptions = [
+        library: "quarkus" // use Quarkus-friendly templates
+    ]
+}
+
 //Configure Spotless to use google aosp standards
 //Style Guide: https://source.android.com/docs/setup/contribute/code-style#java-style-rules
 //Configure Spotless to apply on every build
-compileJava.dependsOn spotlessApply
+
 spotless {
     java {
-        target fileTree('.') {
+        // Use fileTree for the generated sources to ensure they’re picked up
+        target fileTree('src/main/java') {
             include '**/*.java'
-            exclude '**/build/**', '**/build-*/**'
+        },
+        fileTree("$buildDir/generated/src/gen/java") {
+            include '**/*.java'
         }
         toggleOffOn()
         googleJavaFormat("1.25.2").aosp()
@@ -129,33 +159,7 @@ spotless {
     }
 }
 
-compileJava.dependsOn tasks.openApiGenerate
-openApiGenerate {
-    // Use a JAX-RS spec generator that works with Quarkus
-    generatorName = "jaxrs-spec"
-    // Point directly to the Blue Alliance Swagger API JSON URL
-    inputSpec = "$rootDir/src/main/resources/api_v3.json"
-    // Specify where to output the generated code
-    outputDir = "$buildDir/generated"
-    // Package names for the generated code
-    apiPackage = "com.tba.api"
-    modelPackage = "com.tba.model"
-    invokerPackage = "com.tba.invoker"
-    // Additional properties merged into the generation process:
-    additionalProperties = [
-        interfaceOnly         : "true",
-        returnResponse        : "false", // this tells the generator to return actual types
-        useSwaggerAnnotations : "false",
-        dateLibrary           : "java8",
-        useJakartaEe          : "true",
-        supportAsync          : "false",
-        useMutiny             : "false"
-        //serverBasePath        : "/api/v3"  // <--- This adds /api/v3 to every @Path
-    ]
-    configOptions = [
-        library: "quarkus" // use Quarkus-friendly templates
-    ]
-}
+
 
 // Include the generated sources in your main source set
 sourceSets.main.java {
@@ -171,4 +175,16 @@ test {
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+// Task dependencies to ensure proper ordering
+tasks.named('spotlessApply') {
+    dependsOn tasks.named('openApiGenerate')
+}
+tasks.named('spotlessJava') {
+    dependsOn tasks.named('openApiGenerate')
+    mustRunAfter tasks.named('openApiGenerate')
+}
+tasks.named('compileJava') {
+    dependsOn tasks.named('spotlessApply')
 }

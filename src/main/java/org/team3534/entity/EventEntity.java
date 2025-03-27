@@ -48,14 +48,14 @@ public class EventEntity {
     @OneToMany(mappedBy = "event")
     private List<EventOprsEntity> oprs;
 
-    public static EventEntity fromEvent(DistrictEntity district, Event event) {
+    public static EventEntity fromEvent(Event event) {
         return new EventEntity(
                 event.getKey(),
                 event.getParentEventKey(),
                 event.getName(),
                 event.getShortName(),
                 event.getCity(),
-                district,
+                DistrictEntity.fromDistrict(event.getDistrict()),
                 event.getYear(),
                 event.getStartDate(),
                 event.getEndDate(),

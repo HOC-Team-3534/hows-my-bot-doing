@@ -1,5 +1,6 @@
 package org.team3534.dao;
 
+import com.tba.model.DistrictList;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -9,15 +10,17 @@ import org.team3534.entity.DistrictEntity;
 
 @ApplicationScoped
 public class DistrictDao {
+
     @Inject EntityManager em;
 
     @Transactional
-    public void upsert(DistrictEntity districtEntity) {
-        em.merge(districtEntity);
+    public DistrictEntity upsert(DistrictEntity districtEntity) {
+        return em.merge(districtEntity);
     }
 
-    public void upsert(List<DistrictEntity> districtEntities) {
-        districtEntities.forEach(this::upsert);
+    @Transactional
+    public List<DistrictEntity> upsert(List<DistrictEntity> districtEntities) {
+        return districtEntities.stream().map(em::merge).toList();
     }
 
     public DistrictEntity find(String key) {

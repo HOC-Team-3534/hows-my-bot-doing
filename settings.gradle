@@ -10,4 +10,3 @@ pluginManagement{
 }
 
 rootProject.name = 'hows-my-bot-doing'
-include('src')

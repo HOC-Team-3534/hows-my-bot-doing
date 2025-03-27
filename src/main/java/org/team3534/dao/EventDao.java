@@ -14,12 +14,8 @@ public class EventDao {
     @Inject DistrictDao districtDao;
 
     @Transactional
-    public void upsert(EventEntity eventEntity) {
-        // Handle the district relationship
-        var district = eventEntity.getDistrict();
-        if (district != null) districtDao.upsert(district);
-
-        em.merge(eventEntity);
+    public EventEntity upsert(EventEntity eventEntity) {
+        return em.merge(eventEntity);
     }
 
     public EventEntity find(String key) {

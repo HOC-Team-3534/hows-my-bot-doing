@@ -2,6 +2,7 @@ package org.team3534.resources;
 
 import com.tba.api.EventApi;
 import com.tba.api.EventsApi;
+import io.micrometer.core.annotation.Timed;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
@@ -25,6 +26,7 @@ import org.team3534.services.TeamService;
 
 @Path("/events")
 @Produces(MediaType.TEXT_HTML)
+@Timed
 public class EventResource {
     @CheckedTemplate
     static class Templates {

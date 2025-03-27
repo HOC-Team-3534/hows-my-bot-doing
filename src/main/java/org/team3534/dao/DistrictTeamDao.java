@@ -12,12 +12,13 @@ public class DistrictTeamDao {
     @Inject EntityManager em;
 
     @Transactional
-    public void upsert(DistrictTeamEntity districtTeamEntity) {
-        em.merge(districtTeamEntity);
+    public DistrictTeamEntity upsert(DistrictTeamEntity districtTeamEntity) {
+        return em.merge(districtTeamEntity);
     }
 
-    public void upsert(List<DistrictTeamEntity> districtTeamEntities) {
-        districtTeamEntities.forEach(this::upsert);
+    @Transactional
+    public List<DistrictTeamEntity> upsert(List<DistrictTeamEntity> districtTeamEntities) {
+        return districtTeamEntities.stream().map(em::merge).toList();
     }
 
     public List<DistrictTeamEntity> findAll() {
